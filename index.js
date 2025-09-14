@@ -30,8 +30,8 @@ liveReloadServer.server.once("connection", () => {
 //######################################
 //get requists
 //######################################
-//get data in the home page from database
-app.get("/", async (req, res) => {
+//get users in the home page from database
+app.get("/", (req, res) => {
   UserModel.find()
     .then((result) => {
       res.render("index", { arr: result });
@@ -45,12 +45,22 @@ app.get("/user/add.html", (req, res) => {
   res.render("user/add");
 });
 
-app.get("/user/view.html", (req, res) => {
-  res.render("user/view");
-});
 
 app.get("/user/edit.html", (req, res) => {
   res.render("user/edit");
+});
+
+//get only one user 
+app.get("/user/:id", (req, res) => {
+  UserModel.findById(req.params.id )
+    .then((result) => {
+      console.log(result)
+      res.render("user/view", { oneUser: result });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+
 });
 
 //######################################
@@ -58,7 +68,6 @@ app.get("/user/edit.html", (req, res) => {
 //######################################
 //"/user/add.html" المسار ده لازم يكون نفس المسار اللي في الاكشن في الفورم
 app.post("/user/add.html", (req, res) => {
-  console.log(req.body);
   const user = new UserModel(req.body);
   user
     .save()
