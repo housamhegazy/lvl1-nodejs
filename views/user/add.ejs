@@ -36,7 +36,7 @@
               <%- include('../components/navbar.ejs') %>
 
 
-        <form class="mx-0 row gx-3 gy-4 mt-3">
+        <form action="/user/add.html" method="post" class="mx-0 row gx-3 gy-4 mt-3">
           <div class="col-md-6">
             <label for="inputfirstName4" class="form-label">First Name:</label>
             <input
@@ -44,6 +44,7 @@
               type="text"
               class="form-control"
               id="inputfirstName4"
+              name= "firstName"
             />
           </div>
           <div class="col-md-6">
@@ -53,6 +54,7 @@
               type="text"
               class="form-control"
               id="inputlastName4"
+              name="lastName"
             />
           </div>
 
@@ -63,6 +65,7 @@
               type="email"
               class="form-control"
               id="inputemail4"
+              name="email"
             />
           </div>
           <div class="col-md-6">
@@ -72,6 +75,7 @@
               type="number"
               class="form-control"
               id="inputtele4"
+              name="phoneNumber"
             />
           </div>
 
@@ -83,6 +87,7 @@
                 type="number"
                 class="form-control"
                 id="inputage4"
+                name="age"
               />
             </div>
           </div>
@@ -90,7 +95,7 @@
           <div>
             <div class="col-md-6">
               <label for="inputCountry" class="form-label">Country:</label>
-              <select id="inputCountry" class="form-select">
+              <select name="country" id="inputCountry" class="form-select">
                 <option selected hidden disabled>Choose here ...</option>
 
                 <option>Morocco</option>
@@ -102,7 +107,7 @@
           <div>
             <div class="col-md-6">
               <label for="inputGender" class="form-label">Gender:</label>
-              <select id="inputGender" class="form-select">
+              <select name="gender" id="inputGender" class="form-select">
                 <option selected hidden disabled>Choose here ...</option>
                 <option>Male</option>
                 <option>Female</option>

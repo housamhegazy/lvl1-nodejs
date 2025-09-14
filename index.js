@@ -3,67 +3,72 @@ const app = express();
 const port = 3000;
 //هاستدعي ال مونجوز للربط بين مشروعي والداتابيز
 const mongoose = require("mongoose");
+
 app.use(express.urlencoded({ extended: true }));
-//mydata is the file of data in mongoo database
-const Mydata = require("./models/myDataSchema");
+//هنا بستدعي السكيما عشان احدد شكل البيانات اللي هارسلها او اعملها استدعاء من قاعدة البيانات
+const UserModel = require("./models/customerSchema");
 //use ejs to view my data
 app.set("view engine", "ejs");
 //link this page with public (css & images and javascript)
-app.use(express.static('public'))
+app.use(express.static("public"));
 
 //auto refresh
-// 1. استيراد وحدة 'path' للتعامل مع مسارات الملفات
 const path = require("path");
-
-// 2. استيراد وتكوين LiveReload Server
 const livereload = require("livereload"); // استيراد وحدة livereload
 const liveReloadServer = livereload.createServer(); // إنشاء سيرفر LiveReload
 
-// 3. تحديد مجلدات للمراقبة
-// liveReloadServer.watch() تخبر LiveReload بمراقبة التغييرات في المجلد المحدد.
-// path.join(__dirname, 'public') يبني مسارًا مطلقًا لمجلد 'public'
-// بحيث يتم تحديث المتصفح عندما تتغير أي ملفات داخل هذا المجلد (مثل HTML، CSS، JS).
-liveReloadServer.watch(path.join(__dirname, 'public'));
-
-// 4. استيراد وتكوين Middleware لربط Express بـ LiveReload
+liveReloadServer.watch(path.join(__dirname, "public"));
 const connectLivereload = require("connect-livereload"); // استيراد Middleware
-// app.use(connectLivereload()) يضيف Middleware إلى تطبيق Express الخاص بك.
-// هذا Middleware يقوم بحقن شفرة JavaScript صغيرة في صفحاتك لتوصيل المتصفح
-// بسيرفر LiveReload، مما يسمح بالتحديثات التلقائية.
 app.use(connectLivereload());
-
-// 5. تحديث المتصفح عند الاتصال الأولي (لتجنب مشاكل التخزين المؤقت)
-// liveReloadServer.server.once("connection", ...) يستمع لحدث الاتصال الأول بسيرفر LiveReload.
-// setTimeout(...) يؤخر عملية التحديث قليلاً (100 مللي ثانية)
-// livereloadServer.refresh("/") يطلب من سيرفر LiveReload تحديث المسار الجذر ("/") في المتصفحات المتصلة.
-// هذا يضمن أن يتم تحديث الصفحة فورًا بمجرد اتصال LiveReload.
 liveReloadServer.server.once("connection", () => {
-    setTimeout(() => {
-        liveReloadServer.refresh("/");
-    }, 100);
+  setTimeout(() => {
+    liveReloadServer.refresh("/");
+  }, 100);
 });
-
 //end livereload
 
-
 //######################################
-//go to index.ejs page
+//get requists
 //######################################
-app.get("/", (req, res) => {
-    res.render("index");
+//get data in the home page from database
+app.get("/", async (req, res) => {
+  UserModel.find()
+    .then((result) => {
+      res.render("index", { arr: result });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 });
-
 //go to another pages
 app.get("/user/add.html", (req, res) => {
   res.render("user/add");
 });
+
 app.get("/user/view.html", (req, res) => {
   res.render("user/view");
 });
+
 app.get("/user/edit.html", (req, res) => {
   res.render("user/edit");
 });
 
+//######################################
+//post requists to database
+//######################################
+//"/user/add.html" المسار ده لازم يكون نفس المسار اللي في الاكشن في الفورم
+app.post("/user/add.html", (req, res) => {
+  console.log(req.body);
+  const user = new UserModel(req.body);
+  user
+    .save()
+    .then((result) => {
+      res.redirect("/user/add.html");
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+});
 //######################################
 // link between my project and mongooDB
 //######################################
