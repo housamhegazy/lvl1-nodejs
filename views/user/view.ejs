@@ -95,12 +95,12 @@
 
             <tr>
               <th scope="row">Created on</th>
-              <td><%= oneUser.phoneNumber %></td>
+              <td><%=  format(new Date(oneUser.createdAt), 'MM/dd/yyyy') %></td>
             </tr>
 
             <tr>
               <th scope="row">Last Update</th>
-              <td>Test7</td>
+              <td><%=  formatDistance(subDays(new Date(oneUser.updatedAt), 3), new Date(), { addSuffix: true }); %></td>
             </tr>
           </tbody>
         </table>
