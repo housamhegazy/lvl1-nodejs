@@ -6,7 +6,7 @@
       rel="stylesheet"
       href="../bootstrap-icons-1.10.5/font/bootstrap-icons.min.css"
     />
-    <link rel="shortcut icon" href="../img/ali.png" type="image/x-icon">
+    <link rel="shortcut icon" href="../img/ali.png" type="image/x-icon" />
 
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -17,24 +17,22 @@
     />
     <meta name="generator" content="Hugo 0.112.5" />
     <title>Search page</title>
-
     <link href="../css/bootstrap.min.css" rel="stylesheet" />
-
-      <link rel="stylesheet" href="../css/dark-light.css">
+    <link rel="stylesheet" href="../css/dark-light.css" />
 
     <!-- Custom styles for this template -->
     <link href="../css/sidebars.css" rel="stylesheet" />
     <link rel="stylesheet" href="../css/myStyle.css" />
   </head>
   <body>
-      <%- include('../components/dark-light.ejs') %>
+    <%- include('../components/dark-light.ejs') %>
     <main class="d-flex flex-nowrap">
       <%- include('../components/sidebar.ejs',{currentPage:"search"}) %>
 
-
       <section class="w-100">
-              <%- include('../components/navbar.ejs') %>
-
+        <%- include('../components/navbar.ejs') %> 
+        <% if (searchResults &&
+        searchResults.length > 0) { %>
         <table
           style="width: 99%"
           class="text-center mx-auto table mt-5 table-striped table-bordered"
@@ -50,11 +48,14 @@
             </tr>
           </thead>
           <tbody>
+            <% searchResults.forEach(user => { %>
+
             <tr>
               <th scope="row">1</th>
-              <td>test1</td>
-              <td>test2</td>
-              <td>@test3</td>
+              <td><%= user.firstName %> <%= user.lastName %></td>
+              <td><%= user.gender %></td>
+              <td><%= user.country %></td>
+              <td><%= user.age %></td>
 
               <td>
                 <a
@@ -62,7 +63,7 @@
                   data-bs-title="View details"
                   data-bs-placement="top"
                   class="btn btn-primary btn-sm"
-                  href="./user/view.html"
+                  href="./view/<%= user._id %>"
                   ><i class="bi bi-eye"></i
                 ></a>
 
@@ -71,7 +72,7 @@
                   data-bs-title="Edit user"
                   data-bs-placement="top"
                   class="btn btn-primary btn-sm"
-                  href="./user/edit.html"
+                  href="./edit/<%= user._id %>"
                 >
                   <i class="bi bi-pencil"></i>
                 </a>
@@ -79,19 +80,43 @@
                   data-bs-toggle="tooltip"
                   data-bs-title="Delete user"
                   data-bs-placement="top"
+                  class="deleteCustomerBtn"
+                  data-id="<%= user._id %>"
                   class="btn btn-danger btn-sm"
                 >
                   <i class="bi bi-trash"></i>
                 </button>
               </td>
             </tr>
+
+            <% }) %>
           </tbody>
         </table>
+        <% } else {%>
+        <p class="text-warning">No users found matching your search.</p>
+        <% } %>
       </section>
     </main>
     <script src="../js/bootstrap.bundle.min.js"></script>
 
     <script src="../js/sidebars.js"></script>
     <script src="../js/main.js"></script>
+
+    <script type="module">
+      import { deleteUser } from "../js/delete.js";
+      document.addEventListener("DOMContentLoaded", () => {
+        const deleteButtons = document.querySelectorAll(".deleteCustomerBtn"); // اختر الزر بواسطة الـ class
+
+        // تحقق إذا كان الزر موجوداً
+        if (deleteButtons) {
+          deleteButtons.forEach((item) => {
+            item.addEventListener("click", async (event) => {
+              const userId = event.currentTarget.dataset.id; // استخرج الـ ID
+              deleteUser(userId);
+            });
+          });
+        }
+      });
+    </script>
   </body>
 </html>

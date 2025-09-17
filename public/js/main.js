@@ -3,7 +3,6 @@ if (localStorage.getItem("isSmall") === "yes") {
 } else {
   sidebarId.classList.remove("small-sidebar");
 }
-
 const toggleSidebar = () => {
   if (localStorage.getItem("isSmall") === "yes") {
     localStorage.setItem("isSmall", "no");

@@ -56,7 +56,7 @@
             <% arr.forEach(element => { %>
             <tr>
               <th scope="row">2</th>
-              <td><%= element.firstName %></td>
+              <td><%= element.firstName %> <%= element.lastName %></td>
 
               <td><%= element.gender %></td>
               <td><%= element.country %></td>
@@ -110,7 +110,8 @@
     <script src="./js/main.js"></script>
 
     <!-- delete customers  -->
-    <script>
+    <script type="module">
+      import { deleteUser } from '../js/delete.js';
       document.addEventListener("DOMContentLoaded", () => {
         const deleteButtons = document.querySelectorAll(".deleteCustBtn"); // اختر الزر بواسطة الـ ID
         if (deleteButtons) {
@@ -118,30 +119,7 @@
           deleteButtons.forEach((item) => {
             item.addEventListener("click", async (event) => {
               const userId = event.currentTarget.dataset.id; // استخرج الـ ID
-              if (confirm("هل أنت متأكد من حذف هذا العميل؟")) {
-                try {
-                  const response = await fetch(`/edit/${userId}`, {
-                    // الرابط هنا يجب أن يطابق مسار DELETE في الخادم
-                    method: "DELETE",
-                  });
-
-                  if (response.ok) {
-                    const result = await response.json(); // توقع استجابة JSON
-                    alert(result.message || "Customer deleted successfully!");
-                    window.location.href = "/"; // أعد توجيه المستخدم إلى الصفحة الرئيسية بعد النجاح
-                  } else {
-                    const error = await response.json();
-                    alert(
-                      `فشل حذف العميل: ${error.message || response.statusText}`
-                    );
-                  }
-                } catch (error) {
-                  console.error("Network error or unexpected issue:", error);
-                  alert(
-                    "حدث خطأ أثناء محاولة حذف العميل. يرجى المحاولة مرة أخرى."
-                  );
-                }
-              }
+              deleteUser(userId)
             });
           });
         }

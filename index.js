@@ -3,7 +3,7 @@ const app = express();
 const port = 3000;
 //هاستدعي ال مونجوز للربط بين مشروعي والداتابيز
 const mongoose = require("mongoose");
-//overide method حتى استطيع استخدام delete , put 
+//overide method حتى استطيع استخدام delete , put
 const methodOverride = require("method-override");
 // ✅ إضافة middleware لتحليل JSON (لـ PUT و POST مع fetch/JSON)
 app.use(express.json());
@@ -105,7 +105,6 @@ app.put("/edit/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const updateData = req.body; // البيانات المرسلة من الفورم في الواجهة الأمامية
-    console.log(`Updating user ID: ${id} with data:`, updateData);
     const updatedUser = await UserModel.findByIdAndUpdate(id, updateData, {
       new: true,
       runValidators: true,
@@ -142,7 +141,36 @@ app.delete("/edit/:id", async (req, res) => {
     res.status(500).json({ message: "Server Error" });
   }
 });
-//######################################
+
+//search
+// في index.js، أضف هذا بعد الـ GET routes
+app.get("/search", (req, res) => {
+  const searchValue = req.query.searchname.trim(); // الحصول على قيمة البحث من استعلام URL
+  if (!searchValue) {
+    // إذا لم يكن هناك استعلام، ارجع إلى الصفحة الرئيسية
+    return res.redirect("/");
+  }
+
+  // البحث عن المستخدمين بناءً على الاسم أو البريد الإلكتروني
+  // $or mongoo db operators 
+  UserModel.find({
+    $or: [
+      { firstName: { $regex: searchValue, $options: "i" } },
+      { lastName: { $regex: searchValue, $options: "i" } },
+      { email: { $regex: searchValue, $options: "i" } },
+      { phoneNumber: { $regex: searchValue, $options: "i" } },
+      { country: { $regex: searchValue, $options: "i" } },
+    ],
+  })
+    .then((searchResults) => {
+      res.render("user/search", { searchResults, searchValue }); // توجيه إلى الصفحة الجديدة
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send("Error searching users");
+    });
+});
+//###################################### 
 // link between my project and mongooDB
 //######################################
 mongoose
