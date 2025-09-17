@@ -32,8 +32,12 @@
 
       <section class="w-100">
         <%- include('./components/navbar.ejs') %>
+        <% if(!arr || arr.length === 0 ){ %>
+          <h1>no data</h1> 
+          <% } %>
 
-        <table
+      <% if(arr && arr.length > 0 ) {%>
+          <table
           style="width: 99%"
           class="text-center mx-auto table mt-5 table-striped table-bordered"
         >
@@ -58,8 +62,7 @@
               <td><%= element.country %></td>
               <td><%= element.age %></td>
               <td>
-                <%= formatDistance(subDays(new Date(element.updatedAt), 3), new
-                Date(), { addSuffix: true }); %>
+                 <%= formatDistanceToNow(new Date(element.updatedAt), { addSuffix: true }); %>
               </td>
               <td>
                 <a
@@ -81,21 +84,23 @@
                   <i class="bi bi-pencil"></i>
                 </a>
 
-                <form style="display: inline" action="/edit/<%= element._id %>?_method=DELETE" method="post">
-                  <button
-                    data-bs-toggle="tooltip"
-                    data-bs-title="Delete user"
-                    data-bs-placement="top"
-                    class="btn btn-danger btn-sm"
-                  >
-                    <i class="bi bi-trash"></i>
-                  </button>
-                </form>
+                <button
+                  class="deleteCustBtn"
+                  data-bs-toggle="tooltip"
+                  data-bs-title="Delete user"
+                  data-bs-placement="top"
+                  class="btn btn-danger btn-sm"
+                  data-id="<%= element._id %>"
+                  id="deleteCustomerBtn<%= element._id %>"
+                >
+                  <i class="bi bi-trash"></i>
+                </button>
               </td>
             </tr>
             <% }) %>
           </tbody>
         </table>
+        <% } %>
       </section>
     </main>
     <script src="./js/bootstrap.bundle.min.js"></script>
@@ -103,5 +108,44 @@
     <script src="./js/sidebars.js"></script>
 
     <script src="./js/main.js"></script>
+
+    <!-- delete customers  -->
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const deleteButtons = document.querySelectorAll(".deleteCustBtn"); // اختر الزر بواسطة الـ ID
+        if (deleteButtons) {
+          // تحقق إذا كان الزر موجوداً
+          deleteButtons.forEach((item) => {
+            item.addEventListener("click", async (event) => {
+              const userId = event.currentTarget.dataset.id; // استخرج الـ ID
+              if (confirm("هل أنت متأكد من حذف هذا العميل؟")) {
+                try {
+                  const response = await fetch(`/edit/${userId}`, {
+                    // الرابط هنا يجب أن يطابق مسار DELETE في الخادم
+                    method: "DELETE",
+                  });
+
+                  if (response.ok) {
+                    const result = await response.json(); // توقع استجابة JSON
+                    alert(result.message || "Customer deleted successfully!");
+                    window.location.href = "/"; // أعد توجيه المستخدم إلى الصفحة الرئيسية بعد النجاح
+                  } else {
+                    const error = await response.json();
+                    alert(
+                      `فشل حذف العميل: ${error.message || response.statusText}`
+                    );
+                  }
+                } catch (error) {
+                  console.error("Network error or unexpected issue:", error);
+                  alert(
+                    "حدث خطأ أثناء محاولة حذف العميل. يرجى المحاولة مرة أخرى."
+                  );
+                }
+              }
+            });
+          });
+        }
+      });
+    </script>
   </body>
 </html>

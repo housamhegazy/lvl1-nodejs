@@ -42,16 +42,16 @@
           <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="/">Home</a></li>
             <li class="breadcrumb-item active" aria-current="page">
-              Ali Hassan
+              <%= oneUser.firstName %> <%= oneUser.lastName %>
             </li>
           </ol>
 
           <p class="me-md-5">
-            <span class="fw-medium fs-6">Id :</span> 6487021520bcf1af6319484c
+            <span class="fw-medium fs-6">user id:</span> <%= oneUser._id %>
           </p>
         </nav>
 
-        <form class="mx-0 row gx-3 gy-4 mt-2">
+        <form id="editUserForm">
           <div class="col-md-6">
             <label for="inputfirstName4" class="form-label">First Name:</label>
             <input
@@ -59,6 +59,8 @@
               type="text"
               class="form-control"
               id="inputfirstName4"
+              value="<%= oneUser.firstName %>"
+              name="firstName"
             />
           </div>
           <div class="col-md-6">
@@ -68,6 +70,8 @@
               type="text"
               class="form-control"
               id="inputlastName4"
+              value="<%= oneUser.lastName %>"
+              name="lastName"
             />
           </div>
 
@@ -78,6 +82,8 @@
               type="email"
               class="form-control"
               id="inputemail4"
+              value="<%= oneUser.email %>"
+              name="email"
             />
           </div>
           <div class="col-md-6">
@@ -87,6 +93,8 @@
               type="number"
               class="form-control"
               id="inputtele4"
+              value="<%= oneUser.phoneNumber %>"
+              name="phoneNumber"
             />
           </div>
 
@@ -98,6 +106,8 @@
                 type="number"
                 class="form-control"
                 id="inputage4"
+                value="<%= oneUser.age %>"
+                name="age"
               />
             </div>
           </div>
@@ -105,11 +115,13 @@
           <div>
             <div class="col-md-6">
               <label for="inputCountry" class="form-label">Country:</label>
-              <select id="inputCountry" class="form-select">
-                <option selected hidden disabled>Choose here ...</option>
-
-                <option>Morocco</option>
-                <option>Egypt</option>
+              <select name="country" id="inputCountry" class="form-select">
+                <option <%= !oneUser || oneUser.country == null &&  "selected"  %> selected hidden disabled>Choose here ...</option>
+                <% const country_list = ["Afghanistan","Albania","Algeria","Andorra","Angola","Anguilla","Antigua &amp; Barbuda","Argentina","Armenia","Aruba","Australia","Austria","Azerbaijan","Bahamas","Bahrain","Bangladesh","Barbados","Belarus","Belgium","Belize","Benin","Bermuda","Bhutan","Bolivia","Bosnia &amp; Herzegovina","Botswana","Brazil","British Virgin Islands","Brunei","Bulgaria","Burkina Faso","Burundi","Cambodia","Cameroon","Cape Verde","Cayman Islands","Chad","Chile","China","Colombia","Congo","Cook Islands","Costa Rica","Cote D Ivoire","Croatia","Cruise Ship","Cuba","Cyprus","Czech Republic","Denmark","Djibouti","Dominica","Dominican Republic","Ecuador","Egypt","El Salvador","Equatorial Guinea","Estonia","Ethiopia","Falkland Islands","Faroe Islands","Fiji","Finland","France","French Polynesia","French West Indies","Gabon","Gambia","Georgia","Germany","Ghana","Gibraltar","Greece","Greenland","Grenada","Guam","Guatemala","Guernsey","Guinea","Guinea Bissau","Guyana","Haiti","Honduras","Hong Kong","Hungary","Iceland","India","Indonesia","Iran","Iraq","Ireland","Isle of Man","Israel","Italy","Jamaica","Japan","Jersey","Jordan","Kazakhstan","Kenya","Kuwait","Kyrgyz Republic","Laos","Latvia","Lebanon","Lesotho","Liberia","Libya","Liechtenstein","Lithuania","Luxembourg","Macau","Macedonia","Madagascar","Malawi","Malaysia","Maldives","Mali","Malta","Mauritania","Mauritius","Mexico","Moldova","Monaco","Mongolia","Montenegro","Montserrat","Morocco","Mozambique","Namibia","Nepal","Netherlands","Netherlands Antilles","New Caledonia","New Zealand","Nicaragua","Niger","Nigeria","Norway","Oman","Pakistan","Palestine","Panama","Papua New Guinea","Paraguay","Peru","Philippines","Poland","Portugal","Puerto Rico","Qatar","Reunion","Romania","Russia","Rwanda","Saint Pierre &amp; Miquelon","Samoa","San Marino","Satellite","Saudi Arabia","Senegal","Serbia","Seychelles","Sierra Leone","Singapore","Slovakia","Slovenia","South Africa","South Korea","Spain","Sri Lanka","St Kitts &amp; Nevis","St Lucia","St Vincent","St. Lucia","Sudan","Suriname","Swaziland","Sweden","Switzerland","Syria","Taiwan","Tajikistan","Tanzania","Thailand","Timor L'Este","Togo","Tonga","Trinidad &amp; Tobago","Tunisia","Turkey","Turkmenistan","Turks &amp; Caicos","Uganda","Ukraine","United Arab Emirates","United Kingdom","Uruguay","Uzbekistan","Venezuela","Vietnam","Virgin Islands (US)","Yemen","Zambia","Zimbabwe"]; %>
+                <% country_list.forEach((item)=>{%>
+                  <option value="<%= item %>" <%= oneUser && oneUser.country === item && 'selected' %>><%= item %></option>
+                  <% })  %>
+                
               </select>
             </div>
           </div>
@@ -117,16 +129,17 @@
           <div>
             <div class="col-md-6">
               <label for="inputGender" class="form-label">Gender:</label>
-              <select id="inputGender" class="form-select">
+              <select name="gender" id="inputGender" class="form-select">
                 <option selected hidden disabled>Choose here ...</option>
-                <option>Male</option>
-                <option>Female</option>
+                <option value="Male" <%= oneUser && oneUser.gender === "Male" && 'selected' %> >Male</option>
+                <option value="Female" <%= oneUser && oneUser.gender === "Female" && 'selected' %>>Female</option>
               </select>
             </div>
           </div>
 
           <div class="col-12">
-            <button type="submit" class="btn btn-primary">
+            <!-- update customer  -->
+            <button type="submit" class="btn btn-primary" >
               Update changes
             </button>
 
@@ -174,18 +187,6 @@
               >
                 Close
               </button>
-              <!-- <form action="/edit/iddddddddddd?_method=DELETE" method="post">
-                <button
-                  data-bs-toggle="modal"
-                  data-bs-target="#exampleModal"
-                  type="button"
-                  class="btn btn-danger"
-                  data-id="iddddddddddd"
-                  id="deleteCustomerBtn" 
-                >
-                  Delete Customer
-                </button>
-              </form> -->
               <button
                   data-bs-toggle="modal"
                   data-bs-target="#exampleModal"
@@ -210,8 +211,57 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
+    const editUserForm = document.getElementById('editUserForm');
     const deleteButton = document.getElementById('deleteCustomerBtn'); // اختر الزر بواسطة الـ ID
 
+    // update user
+     if (editUserForm) {
+          const userId = "<%= oneUser._id %>"; // الحصول على الـ ID من EJS
+          editUserForm.addEventListener('submit', async (e) => {
+            e.preventDefault(); // منع إرسال الفورم بالطريقة التقليدية
+
+            // جمع البيانات من الفورم
+            const formData = new FormData(editUserForm);    
+            const data = {};
+            for (let [key, value] of formData.entries()) {  
+                    data[key] = value;  
+            }
+            console.log(data);
+            // تنظيف حقل الاسم من المسافات الزائدة
+            if (data.name) {
+                data.name = data.name.trim();
+            }
+            
+            try {
+              const response = await fetch(`/edit/${userId}`, { // مسار الـ PUT في الخادم
+                method: 'PUT',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data), // إرسال البيانات كـ JSON
+              });
+
+              if (response.ok) {
+                const result = await response.json();
+                alert(result.message);
+
+                // اختياري: تحديث الواجهة أو إعادة التوجيه
+                // window.location.reload(); // لتحديث البيانات في الفورم بعد التحديث
+                window.location.href = '/'; // العودة للصفحة الرئيسية
+              } else {
+                const error = await response.json();
+                alert(`فشل التحديث: ${error.message || response.statusText}`);
+                console.error('Server error during update:', error);
+              }
+            } catch (error) {
+              console.error('Network error or unexpected issue during update:', error);
+              alert('حدث خطأ أثناء محاولة تحديث العميل. يرجى المحاولة مرة أخرى.');
+            }
+          });
+        }
+
+
+        //delete user
     if (deleteButton) { // تحقق إذا كان الزر موجوداً
       deleteButton.addEventListener('click', async (event) => {
         const userId = event.currentTarget.dataset.id; // استخرج الـ ID

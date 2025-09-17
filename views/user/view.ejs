@@ -20,7 +20,7 @@
 
     <link href="../css/bootstrap.min.css" rel="stylesheet" />
 
-    
+      <link rel="stylesheet" href="../css/dark-light.css" />
 
     <!-- Custom styles for this template -->
     <link href="../css/sidebars.css" rel="stylesheet" />
@@ -100,7 +100,7 @@
 
             <tr>
               <th scope="row">Last Update</th>
-              <td><%=  formatDistance(subDays(new Date(oneUser.updatedAt), 3), new Date(), { addSuffix: true }); %></td>
+              <td><%=  formatDistanceToNow((new Date(oneUser.updatedAt)), { addSuffix: true }); %></td>
             </tr>
           </tbody>
         </table>
