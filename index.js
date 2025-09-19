@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
-const port = 3000;
+//process.env.PORT: ده معناه اللينك اللي هاحصل عليه من الموقع 
+const port = process.env.PORT || 3000;
 //هاستدعي ال مونجوز للربط بين مشروعي والداتابيز
 const mongoose = require("mongoose");
 //overide method حتى استطيع استخدام delete , put
@@ -9,19 +10,13 @@ const methodOverride = require("method-override");
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 //هنا بستدعي السكيما عشان احدد شكل البيانات اللي هارسلها او اعملها استدعاء من قاعدة البيانات
-const allRoutes = require('./routes/allRoutes')
-const addUserRoute = require("./routes/adduser")
-
-// ...
-
-
+const allRoutes = require("./routes/allRoutes");
+const addUserRoute = require("./routes/adduser");
 //use ejs to view my data
 app.set("view engine", "ejs");
 //link this page with public (css & images and javascript)
 app.use(express.static("public"));
 //import date and time func
-
-
 app.use(methodOverride("_method"));
 
 //auto refresh
@@ -38,7 +33,7 @@ liveReloadServer.server.once("connection", () => {
   }, 100);
 });
 //end livereload
-//###################################### 
+//######################################
 // link between my project and mongooDB
 //######################################
 mongoose
@@ -55,5 +50,5 @@ mongoose
     console.log(err);
   });
 
-  app.use('', allRoutes)
-  app.use('', addUserRoute)
+app.use("", allRoutes);
+app.use("/user/add.html", addUserRoute);
