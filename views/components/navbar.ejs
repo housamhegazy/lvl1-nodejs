@@ -5,6 +5,12 @@
     <a class="navbar-brand fw-medium fs-3 mb-1 mb-md-0">
       Hegazy <sup>4</sup> dev</a
     >
+    <% if (loggedInUsername ) { %>
+    <span class="navbar-text me-3"> welcome : <%= loggedInUsername  %> </span>
+    <a href="/logout" class="btn btn-outline-light">تسجيل الخروج</a>
+    <% } else { %>
+    <a href="/login" class="btn btn-outline-light">تسجيل الدخول</a>
+    <% } %>
 
     <form action="/search" method="GET" class="d-flex" role="search">
       <input

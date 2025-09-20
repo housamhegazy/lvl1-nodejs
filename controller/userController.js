@@ -1,40 +1,63 @@
 const { format, formatDistanceToNow } = require("date-fns");
 const UserModel = require("../models/customerSchema");
+const userSchema = require("../models/userSchema");
 
-
-
+// -----------------------------------------------------------------
+// مسار الصفحة الرئيسية (محمية)
+// -----------------------------------------------------------------
+// <--- تم تعديل المسار الرئيسي ليستخدم isAuthenticated
 //users:any name - index:rendered file - get:used method
-const users_index_get = (req, res) => {
-  UserModel.find()
-    .then((result) => {
-      res.render("index", {
-        arr: result,
-        formatDistanceToNow: formatDistanceToNow,
-        format: format,
-      });
-    })
-    .catch((err) => {
-      console.log(err);
+
+const customers_index_get = async (req, res) => {
+  try {
+    // 1.  لجلب الزبائن المسجله تحت اسم المستخدم يتم جلب معرف المستخدم المسجل دخوله من الجلسة
+    const currentUserId = req.session.userId;
+    //get all customers
+    const customers = await UserModel.find({ owner: currentUserId }).sort({
+      createdAt: -1,
     });
-}
 
+    // 3. تمرير كل هذه البيانات إلى قالب EJS
+    res.render("index", {
+      arr: customers, // قائمة الزبائن التي جلبتها للتو
+      formatDistanceToNow: formatDistanceToNow,
+      format: format,
+    });
+  } catch (err) {
+    console.error("Error in customers_index_get:", err);
+    res.status(500).send("Error loading data for home page.");
+  }
+};
 
-const user_edit_get =  (req, res) => {
+const customers_edit_get = (req, res) => {
+  // 1. جلب معرف المستخدم المسجل دخوله من الجلسة
+  const currentUserId = req.session.userId;
+
+  // 2. البحث عن الزبون بالاي دي والاونر اي دي
+  // (يجب أن يكون المسار محميًا بـ isAuthenticated لضمان وجود req.session.userId)
   //first get user to mirror it to edit page (to use it whene delete or update data)
-  UserModel.findById(req.params.id)
+  UserModel.findOne({ _id: req.params.id, owner: currentUserId })
     .then((result) => {
+      if (!result) {
+        // إذا لم يتم العثور على الزبون أو إذا لم يكن المستخدم هو المالك
+        return res
+          .status(404)
+          .send("Customer not found or you do not have permission to edit it.");
+      }
       res.render("user/edit", {
-        oneUser: result,
+        oneCustomer: result,
+        // يمكنك أيضًا تمرير loggedInUsername إذا لم يكن متاحًا عبر res.locals
+        // username: req.session.username
       });
     })
     .catch((err) => {
       console.log(err);
     });
-}
+};
 
-
-const user_view_get = (req, res) => {
-  UserModel.findById(req.params.id)
+const customers_view_get = (req, res) => {
+  const currentUserId = req.session.userId;
+  UserModel.findOne({ _id: req.params.id, owner: currentUserId })
     .then((result) => {
       res.render("user/view", {
         oneUser: result,
@@ -45,14 +68,15 @@ const user_view_get = (req, res) => {
     .catch((err) => {
       console.log(err);
     });
-}
+};
 
-const userUpdate_edit_put = async (req, res) => {
+const customersUpdate_edit_put = async (req, res) => {
+  const currentUserId = req.session.userId;
   // <--- مسار تحديث المستخدم (يستخدم PUT)
   try {
     const { id } = req.params;
     const updateData = req.body; // البيانات المرسلة من الفورم في الواجهة الأمامية
-    const updatedUser = await UserModel.findByIdAndUpdate(id, updateData, {
+    const updatedUser = await UserModel.findOneAndUpdate({ _id: req.params.id, owner: currentUserId }, updateData, {
       new: true,
       runValidators: true,
     }); // new: true لإرجاع المستند المحدث، runValidators: true لتشغيل validations
@@ -68,11 +92,12 @@ const userUpdate_edit_put = async (req, res) => {
     // ✅ أضف response في catch لتجنب تعليق الطلب
     res.status(500).json({ message: "Server error during update" });
   }
-}
+};
 
-const user_delete =  async (req, res) => {
+const customers_delete = async (req, res) => {
+  const currentUserId = req.session.userId;
   try {
-    const deletedUser = await UserModel.findByIdAndDelete(req.params.id);
+    const deletedUser = await UserModel.findOneAndDelete({ _id: req.params.id, owner: currentUserId });
     if (!deletedUser) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -85,9 +110,10 @@ const user_delete =  async (req, res) => {
     }
     res.status(500).json({ message: "Server Error" });
   }
-}
+};
 
-const user_search_get = (req, res) => {
+const customers_search_get = (req, res) => {
+  const currentUserId = req.session.userId;
   const searchValue = req.query.searchname.trim(); // الحصول على قيمة البحث من استعلام URL
   if (!searchValue) {
     // إذا لم يكن هناك استعلام، ارجع إلى الصفحة الرئيسية
@@ -95,7 +121,7 @@ const user_search_get = (req, res) => {
   }
 
   // البحث عن المستخدمين بناءً على الاسم أو البريد الإلكتروني
-  // $or mongoo db operators 
+  // $or mongoo db operators
   UserModel.find({
     $or: [
       { firstName: { $regex: searchValue, $options: "i" } },
@@ -104,14 +130,22 @@ const user_search_get = (req, res) => {
       { phoneNumber: { $regex: searchValue, $options: "i" } },
       { country: { $regex: searchValue, $options: "i" } },
     ],
+     owner: currentUserId 
   })
     .then((searchResults) => {
       res.render("user/search", { searchResults, searchValue }); // توجيه إلى الصفحة الجديدة
     })
     .catch((err) => {
-      console.log(err); 
+      console.log(err);
       res.status(500).send("Error searching users");
     });
-}
+};
 
-module.exports = {users_index_get,user_edit_get,user_view_get,userUpdate_edit_put,user_delete,user_search_get} 
+module.exports = {
+  customers_index_get,
+  customers_edit_get,
+  customers_view_get,
+  customersUpdate_edit_put,
+  customers_delete,
+  customers_search_get,
+};

@@ -42,12 +42,12 @@
           <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="/">Home</a></li>
             <li class="breadcrumb-item active" aria-current="page">
-              <%= oneUser.firstName %> <%= oneUser.lastName %>
+              <%= oneCustomer.firstName %> <%= oneCustomer.lastName %>
             </li>
           </ol>
 
           <p class="me-md-5">
-            <span class="fw-medium fs-6">user id:</span> <%= oneUser._id %>
+            <span class="fw-medium fs-6">user id:</span> <%= oneCustomer._id %>
           </p>
         </nav>
 
@@ -59,7 +59,7 @@
               type="text"
               class="form-control"
               id="inputfirstName4"
-              value="<%= oneUser.firstName %>"
+              value="<%= oneCustomer.firstName %>"
               name="firstName"
             />
           </div>
@@ -70,7 +70,7 @@
               type="text"
               class="form-control"
               id="inputlastName4"
-              value="<%= oneUser.lastName %>"
+              value="<%= oneCustomer.lastName %>"
               name="lastName"
             />
           </div>
@@ -82,7 +82,7 @@
               type="email"
               class="form-control"
               id="inputemail4"
-              value="<%= oneUser.email %>"
+              value="<%= oneCustomer.email %>"
               name="email"
             />
           </div>
@@ -93,7 +93,7 @@
               type="number"
               class="form-control"
               id="inputtele4"
-              value="<%= oneUser.phoneNumber %>"
+              value="<%= oneCustomer.phoneNumber %>"
               name="phoneNumber"
             />
           </div>
@@ -106,7 +106,7 @@
                 type="number"
                 class="form-control"
                 id="inputage4"
-                value="<%= oneUser.age %>"
+                value="<%= oneCustomer.age %>"
                 name="age"
               />
             </div>
@@ -116,10 +116,10 @@
             <div class="col-md-6">
               <label for="inputCountry" class="form-label">Country:</label>
               <select name="country" id="inputCountry" class="form-select">
-                <option <%= !oneUser || oneUser.country == null &&  "selected"  %> selected hidden disabled>Choose here ...</option>
+                <option <%= !oneCustomer || oneCustomer.country == null &&  "selected"  %> selected hidden disabled>Choose here ...</option>
                 <% const country_list = ["Afghanistan","Albania","Algeria","Andorra","Angola","Anguilla","Antigua &amp; Barbuda","Argentina","Armenia","Aruba","Australia","Austria","Azerbaijan","Bahamas","Bahrain","Bangladesh","Barbados","Belarus","Belgium","Belize","Benin","Bermuda","Bhutan","Bolivia","Bosnia &amp; Herzegovina","Botswana","Brazil","British Virgin Islands","Brunei","Bulgaria","Burkina Faso","Burundi","Cambodia","Cameroon","Cape Verde","Cayman Islands","Chad","Chile","China","Colombia","Congo","Cook Islands","Costa Rica","Cote D Ivoire","Croatia","Cruise Ship","Cuba","Cyprus","Czech Republic","Denmark","Djibouti","Dominica","Dominican Republic","Ecuador","Egypt","El Salvador","Equatorial Guinea","Estonia","Ethiopia","Falkland Islands","Faroe Islands","Fiji","Finland","France","French Polynesia","French West Indies","Gabon","Gambia","Georgia","Germany","Ghana","Gibraltar","Greece","Greenland","Grenada","Guam","Guatemala","Guernsey","Guinea","Guinea Bissau","Guyana","Haiti","Honduras","Hong Kong","Hungary","Iceland","India","Indonesia","Iran","Iraq","Ireland","Isle of Man","Israel","Italy","Jamaica","Japan","Jersey","Jordan","Kazakhstan","Kenya","Kuwait","Kyrgyz Republic","Laos","Latvia","Lebanon","Lesotho","Liberia","Libya","Liechtenstein","Lithuania","Luxembourg","Macau","Macedonia","Madagascar","Malawi","Malaysia","Maldives","Mali","Malta","Mauritania","Mauritius","Mexico","Moldova","Monaco","Mongolia","Montenegro","Montserrat","Morocco","Mozambique","Namibia","Nepal","Netherlands","Netherlands Antilles","New Caledonia","New Zealand","Nicaragua","Niger","Nigeria","Norway","Oman","Pakistan","Palestine","Panama","Papua New Guinea","Paraguay","Peru","Philippines","Poland","Portugal","Puerto Rico","Qatar","Reunion","Romania","Russia","Rwanda","Saint Pierre &amp; Miquelon","Samoa","San Marino","Satellite","Saudi Arabia","Senegal","Serbia","Seychelles","Sierra Leone","Singapore","Slovakia","Slovenia","South Africa","South Korea","Spain","Sri Lanka","St Kitts &amp; Nevis","St Lucia","St Vincent","St. Lucia","Sudan","Suriname","Swaziland","Sweden","Switzerland","Syria","Taiwan","Tajikistan","Tanzania","Thailand","Timor L'Este","Togo","Tonga","Trinidad &amp; Tobago","Tunisia","Turkey","Turkmenistan","Turks &amp; Caicos","Uganda","Ukraine","United Arab Emirates","United Kingdom","Uruguay","Uzbekistan","Venezuela","Vietnam","Virgin Islands (US)","Yemen","Zambia","Zimbabwe"]; %>
                 <% country_list.forEach((item)=>{%>
-                  <option value="<%= item %>" <%= oneUser && oneUser.country === item && 'selected' %>><%= item %></option>
+                  <option value="<%= item %>" <%= oneCustomer && oneCustomer.country === item && 'selected' %>><%= item %></option>
                   <% })  %>
                 
               </select>
@@ -131,8 +131,8 @@
               <label for="inputGender" class="form-label">Gender:</label>
               <select name="gender" id="inputGender" class="form-select">
                 <option selected hidden disabled>Choose here ...</option>
-                <option value="Male" <%= oneUser && oneUser.gender === "Male" && 'selected' %> >Male</option>
-                <option value="Female" <%= oneUser && oneUser.gender === "Female" && 'selected' %>>Female</option>
+                <option value="Male" <%= oneCustomer && oneCustomer.gender === "Male" && 'selected' %> >Male</option>
+                <option value="Female" <%= oneCustomer && oneCustomer.gender === "Female" && 'selected' %>>Female</option>
               </select>
             </div>
           </div>
@@ -192,7 +192,7 @@
                   data-bs-target="#exampleModal"
                   type="button"
                   class="btn btn-danger"
-                  data-id="<%= oneUser._id %>"
+                  data-id="<%= oneCustomer._id %>"
                   id="deleteCustomerBtn" 
                 >
                   Delete Customer
@@ -218,7 +218,7 @@
 
     // update user
      if (editUserForm) {
-          const userId = "<%= oneUser._id %>"; // الحصول على الـ ID من EJS
+          const userId = "<%= oneCustomer._id %>"; // الحصول على الـ ID من EJS
           editUserForm.addEventListener('submit', async (e) => {
             e.preventDefault(); // منع إرسال الفورم بالطريقة التقليدية
 

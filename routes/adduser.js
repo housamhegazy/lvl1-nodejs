@@ -1,6 +1,5 @@
 const express = require('express')
 const router = express.Router()
-const { format, formatDistanceToNow } = require("date-fns");
 const UserModel = require("../models/customerSchema");
 
 
@@ -14,7 +13,12 @@ router.get("", (req, res) => {
 //######################################
 //"/user/add.html" المسار ده لازم يكون نفس المسار اللي في الاكشن في الفورم
 router.post("", (req, res) => {
-  UserModel.create(req.body)
+   // 1. جلب معرف المستخدم من الجلسة
+  const ownerId = req.session.userId; 
+
+  // 2. دمج معرف المستخدم مع بيانات النموذج
+  const newCustomerData = { ...req.body, owner: ownerId }; 
+  UserModel.create(newCustomerData)
     .then((result) => {
       res.redirect("/user/add.html");
     })
